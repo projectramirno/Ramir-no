@@ -1,0 +1,114 @@
+// Constants
+const Command = require("../structures/command.js");
+const prefixhandler = require("../core/prefixhandler.js");
+
+// Main
+module.exports = class Blacklist extends Command {
+  
+  constructor(client) {
+    super("blacklist", "Blacklists a user from voice chat.", ["blacklist", "<(add), (enable, disable)>", "<(@user), ()>"], "message");
+
+    for (const guild in client.guilds) {
+      this.kickBlacklistedUsers(guild);
+    }
+  }
+
+  async invoke(client, message) {
+
+    const guild = message.channel.guild;
+    const guildID = guild.id;
+    const blacklisttoggledb = new this._db("blacklist_toggle");
+    const blacklistdb = new this._db("blacklist");
+
+    // Setting up database preconditions
+    if (!blacklistdb.contains(guildID)) {
+      await blacklistdb.set(guildID, []);
+    }
+
+    if (!blacklisttoggledb.contains(guildID)) {
+      await blacklisttoggledb.set(guildID, false);
+    }
+
+    // Command
+    if (await this.isCommand(message)) { 
+
+      const args = await this.getArgs(message);
+
+      if (args.length == 1) {
+        const data = await blacklisttoggledb.get(guildID);
+
+        if (data && args[0] == "disable") {
+          await blacklisttoggledb.set(guildID, false);
+
+          message.channel.send("Voice channel blacklist disabled.");
+
+        } else if (args[0] == "enable") {
+          await blacklisttoggledb.set(guildID, true);
+
+          message.channel.send("Voice channel blacklist enabled.");
+
+          this.kickBlacklistedUsers(guild);
+        }
+
+      } else if (args.length == 2) {
+
+        var data = await blacklistdb.get(guildID);
+        var userid;
+        const member = message.mentions.members.first();
+
+        if (member) {
+          userid = member.user.id;
+
+          if (args[0] == "add") {
+
+            data.push(userid);
+
+            await blacklistdb.set(guildID, data);
+
+            if (await blacklisttoggledb.get(guildID)) {
+              this.kickBlacklistedUsers(guild);
+            }
+            
+          } else if (args[0] == "remove") {
+
+            if (data.includes(userid)) {
+              await data.splice(data.indexOf(userid));
+            }
+
+            await blacklistdb.set(guildID, data);
+          }
+        } else {
+          message.reply("No user mentioned.");
+        }
+
+      } else {
+        message.channel.send(`Syntax: ${(await this.getSyntax()).join("  ")}`);
+      }
+    }
+  }
+
+  async canJoin(id, blacklist) {
+    for (const i of blacklist) {
+      
+      if (i == id) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  async kickBlacklistedUsers(guild) {
+
+    const blacklistdb = new this._db("blacklist");
+
+    if (await blacklistdb.contains(guild.id)) {
+      for (const member of guild.members.cache) {
+
+        if (member[1].voice.channel && !(await this.canJoin(member[0], await blacklistdb.get(guild.id)))) {
+          member[1].voice.kick();
+        }
+      }
+    }
+  }
+}
