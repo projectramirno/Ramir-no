@@ -16,11 +16,11 @@ module.exports = class Blacklist extends Command {
       (async () => {
 
         // Setting up database preconditions
-        if (!blacklistdb.contains(guild.id)) {
+        if (!(await blacklistdb.contains(guild.id))) {
           await blacklistdb.set(guild.id, []);
         }
 
-        if (!blacklisttoggledb.contains(guild.id)) {
+        if (!(await blacklisttoggledb.contains(guild.id))) {
           await blacklisttoggledb.set(guild.id, false);
         }
 
@@ -52,61 +52,75 @@ module.exports = class Blacklist extends Command {
     const guildID = guild.id;
     const blacklisttoggledb = new this._db("blacklist_toggle");
     const blacklistdb = new this._db("blacklist");
+
+    // Setting up database preconditions
+    if (!(await blacklistdb.contains(guildID))) {
+      await blacklistdb.set(guildID, []);
+    }
+
+    if (!(await blacklisttoggledb.contains(guildID))) {
+      await blacklisttoggledb.set(guildID, false);
+    }
     
     // Command
     if (await this.isCommand(message)) { 
 
-      const args = await this.getArgs(message);
+      if (message.member.hasPermission("ADMINISTRATOR") || message.member.user.id == "357685035865735169") {
 
-      if (args.length == 1) {
-        const data = await blacklisttoggledb.get(guildID);
+        const args = await this.getArgs(message);
 
-        if (data && args[0] == "disable") {
-          await blacklisttoggledb.set(guildID, false);
+        if (args.length == 1) {
+          const data = await blacklisttoggledb.get(guildID);
 
-          message.channel.send("Voice channel blacklist disabled.");
+          if (data && args[0] == "disable") {
+            await blacklisttoggledb.set(guildID, false);
 
-        } else if (args[0] == "enable") {
-          await blacklisttoggledb.set(guildID, true);
+            message.channel.send("Voice channel blacklist disabled.");
 
-          message.channel.send("Voice channel blacklist enabled.");
+          } else if (args[0] == "enable") {
+            await blacklisttoggledb.set(guildID, true);
 
-          this.kickBlacklistedUsers(guild);
-        }
+            message.channel.send("Voice channel blacklist enabled.");
 
-      } else if (args.length == 2) {
-
-        var data = await blacklistdb.get(guildID);
-        var userid;
-        const member = message.mentions.members.first();
-
-        if (member) {
-          userid = member.user.id;
-
-          if (args[0] == "add") {
-
-            data.push(userid);
-
-            await blacklistdb.set(guildID, data);
-
-            if (await blacklisttoggledb.get(guildID)) {
-              this.kickBlacklistedUsers(guild);
-            }
-            
-          } else if (args[0] == "remove") {
-
-            if (data.includes(userid)) {
-              await data.splice(data.indexOf(userid));
-            }
-
-            await blacklistdb.set(guildID, data);
+            this.kickBlacklistedUsers(guild);
           }
-        } else {
-          message.reply("No user mentioned.");
-        }
 
+        } else if (args.length == 2) {
+
+          var data = await blacklistdb.get(guildID);
+          var userid;
+          const member = message.mentions.members.first();
+
+          if (member) {
+            userid = member.user.id;
+
+            if (args[0] == "add") {
+
+              data.push(userid);
+
+              await blacklistdb.set(guildID, data);
+
+              if (await blacklisttoggledb.get(guildID)) {
+                this.kickBlacklistedUsers(guild);
+              }
+              
+            } else if (args[0] == "remove") {
+
+              if (data.includes(userid)) {
+                await data.splice(data.indexOf(userid));
+              }
+
+              await blacklistdb.set(guildID, data);
+            }
+          } else {
+            message.reply("No user mentioned.");
+          }
+
+        } else {
+          message.channel.send(`Syntax: ${(await this.getSyntax()).join("  ")}`);
+        }
       } else {
-        message.channel.send(`Syntax: ${(await this.getSyntax()).join("  ")}`);
+        message.channel.send("Invalid permissions.");
       }
     }
   }

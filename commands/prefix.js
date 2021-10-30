@@ -11,14 +11,11 @@ module.exports = class Prefix extends Command {
 
   async invoke(client, message) {
 
-    if (await this.isCommand(message)) { 
+    const args = await this.getArgs(message);
 
-      const args = await this.getArgs(message);
-
-      // Command
-      if (args.length > 0) {
-        
-      } else {
+    // Command
+    if (args.length == 0) {
+      if (message.mentions.members.first() && message.mentions.members.first().user.id) {
         message.channel.send("Prefix: `" + await prefixhandler.getPrefix() + "`");
       }
     }
