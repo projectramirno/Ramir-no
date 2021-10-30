@@ -19,15 +19,17 @@ const token = process.env.token;
 
   for (const file of files) {
     
-    // Loading commands
-    const commandName = file.substring(0, file.length - 3);
-    const command = new (require(`${commandDir}/${commandName}.js`))(client);
+    client.on("ready", () => {
+      // Loading commands
+      const commandName = file.substring(0, file.length - 3);
+      const command = new (require(`${commandDir}/${commandName}.js`))(client);
 
-    client.on(command.type, (...args) => {
-      (async () => { await command.invoke(client, ...args); })();
+      client.on(command.type, (...args) => {
+        (async () => { await command.invoke(client, ...args); })();
+      });
     });
   }
 })();
 
-//server.start();
+server.start();
 client.login(token);

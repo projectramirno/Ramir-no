@@ -8,9 +8,42 @@ module.exports = class Blacklist extends Command {
   constructor(client) {
     super("blacklist", "Blacklists a user from voice chat.", ["blacklist", "<(add), (enable, disable)>", "<(@user), ()>"], "message");
 
-    for (const guild in client.guilds) {
-      this.kickBlacklistedUsers(guild);
-    }
+    const blacklisttoggledb = new this._db("blacklist_toggle");
+    const blacklistdb = new this._db("blacklist");
+
+    client.guilds.cache.forEach(function(guild) {
+
+      (async () => {
+
+        // Setting up database preconditions
+        if (!blacklistdb.contains(guild.id)) {
+          await blacklistdb.set(guild.id, []);
+        }
+
+        if (!blacklisttoggledb.contains(guild.id)) {
+          await blacklisttoggledb.set(guild.id, false);
+        }
+
+        // Kick blacklisted users initially once bot starts
+        const blacklist = await blacklistdb.get(guild.id);
+        
+        if (await blacklisttoggledb.get(guild.id)) {
+          for (const member of guild.members.cache) {
+            var canJoin = true;
+
+            for (const i of blacklist) {
+              if (i == member[0]) {
+                canJoin = false;
+              }
+            }
+
+            if (member[1].voice.channel && !canJoin) {
+              member[1].voice.kick();
+            }
+          }
+        }
+      })();
+    });
   }
 
   async invoke(client, message) {
@@ -19,16 +52,7 @@ module.exports = class Blacklist extends Command {
     const guildID = guild.id;
     const blacklisttoggledb = new this._db("blacklist_toggle");
     const blacklistdb = new this._db("blacklist");
-
-    // Setting up database preconditions
-    if (!blacklistdb.contains(guildID)) {
-      await blacklistdb.set(guildID, []);
-    }
-
-    if (!blacklisttoggledb.contains(guildID)) {
-      await blacklisttoggledb.set(guildID, false);
-    }
-
+    
     // Command
     if (await this.isCommand(message)) { 
 

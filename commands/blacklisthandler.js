@@ -18,15 +18,6 @@ module.exports = class BlacklistHandler extends Command {
       const blacklistdb = new this._db("blacklist");
       const blacklisttoggledb = new this._db("blacklist_toggle");
 
-      // Setting up database preconditions
-      if (!blacklistdb.contains(guildID)) {
-        await blacklistdb.set(guildID, []);
-      }
-
-      if (!blacklisttoggledb.contains(guildID)) {
-        await blacklisttoggledb.set(guildID, false);
-      }
-
       // Command
       if (await blacklisttoggledb.get(guildID)) {
         const data = await blacklistdb.get(guildID);
