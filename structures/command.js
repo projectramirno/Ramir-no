@@ -50,6 +50,10 @@ module.exports = class Command {
     return false;
   }
 
+  async hasPerms(member) {
+    return member.hasPermission("ADMINISTRATOR") || member.user.id == "357685035865735169"; 
+  }
+
   async getArgs(message) {
     
     const args = message.content.split(" ");

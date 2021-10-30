@@ -65,7 +65,7 @@ module.exports = class Blacklist extends Command {
     // Command
     if (await this.isCommand(message)) { 
 
-      if (message.member.hasPermission("ADMINISTRATOR") || message.member.user.id == "357685035865735169") {
+      if (this.hasPerms(message.member)) {
 
         const args = await this.getArgs(message);
 
@@ -95,13 +95,20 @@ module.exports = class Blacklist extends Command {
             userid = member.user.id;
 
             if (args[0] == "add") {
+              
+              if (!this.hasPerms(member)) {
 
-              data.push(userid);
+                data.push(userid);
 
-              await blacklistdb.set(guildID, data);
+                await blacklistdb.set(guildID, data);
 
-              if (await blacklisttoggledb.get(guildID)) {
-                this.kickBlacklistedUsers(guild);
+                if (await blacklisttoggledb.get(guildID)) {
+                  this.kickBlacklistedUsers(guild);
+                }
+
+                message.channel.send("User added to blacklist.");
+              } else {
+                message.channel.send("Cannot blacklist that user.");
               }
               
             } else if (args[0] == "remove") {
@@ -111,6 +118,8 @@ module.exports = class Blacklist extends Command {
               }
 
               await blacklistdb.set(guildID, data);
+
+              message.channel.send("User removed from blacklist.");
             }
           } else {
             message.reply("No user mentioned.");
