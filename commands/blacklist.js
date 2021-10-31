@@ -95,8 +95,6 @@ module.exports = class Blacklist extends Command {
             userid = member.user.id;
 
             if (args[0] == "add") {
-
-              console.log(await this.hasPerms(member));
               
               if (!await this.hasPerms(member)) {
 
