@@ -65,7 +65,7 @@ module.exports = class Blacklist extends Command {
     // Command
     if (await this.isCommand(message)) { 
 
-      if (this.hasPerms(message.member)) {
+      if (await this.hasPerms(message.member)) {
 
         const args = await this.getArgs(message);
 
@@ -95,8 +95,10 @@ module.exports = class Blacklist extends Command {
             userid = member.user.id;
 
             if (args[0] == "add") {
+
+              console.log(await this.hasPerms(member));
               
-              if (!this.hasPerms(member)) {
+              if (!await this.hasPerms(member)) {
 
                 data.push(userid);
 
