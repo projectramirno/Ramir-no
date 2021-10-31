@@ -15,7 +15,7 @@ module.exports = class Prefix extends Command {
 
     // Command
     if (args.length == 0) {
-      if (message.mentions.members.first() && message.mentions.members.first().user.id) {
+      if (message.mentions.members.first() && message.mentions.members.first().user.id == client.user.id) {
         message.channel.send("Prefix: `" + await prefixhandler.getPrefix() + "`");
       }
     }
