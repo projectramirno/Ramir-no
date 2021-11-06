@@ -6,7 +6,7 @@ const prefixhandler = require("../core/prefixhandler.js");
 module.exports = class Blacklist extends Command {
   
   constructor(client) {
-    super("blacklist", "Blacklists a user from voice chat.", ["blacklist", "<(add), (enable, disable)>", "<(@user), ()>"], "message");
+    super("blacklist", "Blacklists a user from voice chat.", ["blacklist", "<(add, remove), (enable, disable)>", "<(@user), ()>"], "message");
 
     const blacklisttoggledb = new this._db("blacklist_toggle");
     const blacklistdb = new this._db("blacklist");
@@ -97,16 +97,21 @@ module.exports = class Blacklist extends Command {
             if (args[0] == "add") {
               
               if (!await this.hasPerms(member)) {
+                
+                if (!data.includes(userid)) {
+                  data.push(userid);
 
-                data.push(userid);
+                  await blacklistdb.set(guildID, data);
 
-                await blacklistdb.set(guildID, data);
+                  if (await blacklisttoggledb.get(guildID)) {
+                    this.kickBlacklistedUsers(guild);
+                  }
 
-                if (await blacklisttoggledb.get(guildID)) {
-                  this.kickBlacklistedUsers(guild);
+                  message.channel.send("User added to blacklist.");
+                  
+                } else {
+                  message.channel.send("User already blacklisted.");
                 }
-
-                message.channel.send("User added to blacklist.");
               } else {
                 message.channel.send("Cannot blacklist that user.");
               }
@@ -114,12 +119,15 @@ module.exports = class Blacklist extends Command {
             } else if (args[0] == "remove") {
 
               if (data.includes(userid)) {
+
                 await data.splice(data.indexOf(userid));
+                await blacklistdb.set(guildID, data);
+
+                message.channel.send("User removed from blacklist.");
+
+              } else {
+                message.channel.send("User is not blacklisted.");
               }
-
-              await blacklistdb.set(guildID, data);
-
-              message.channel.send("User removed from blacklist.");
             }
           } else {
             message.reply("No user mentioned.");
