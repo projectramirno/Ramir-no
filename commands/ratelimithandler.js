@@ -10,6 +10,7 @@ module.exports = class RateLimitHandler extends Command {
   }
 
   async invoke(client, message) {
+
     const guildID = message.channel.guild.id;
     const ratelimitdb = new this._db("ratelimit");
     const data = await ratelimitdb.get(guildID);

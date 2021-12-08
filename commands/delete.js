@@ -3,10 +3,10 @@ const Command = require("../structures/command.js");
 const prefixhandler = require("../core/prefixhandler.js");
 
 // Main
-module.exports = class Say extends Command {
+module.exports = class Delete extends Command {
   
   constructor(client) {
-    super("say", "Says a message.", ["say", "[...]"], "message");
+    super("delete", "Deletes messages.", ["delete", "<(number)>"], "message");
   }
 
   async invoke(client, message) {
@@ -16,11 +16,9 @@ module.exports = class Say extends Command {
     // Command
     if (await this.hasPerms(message.member) && await this.isCommand(message)) {
 
-      await message.delete();
-
-      if (args.length > 0) {
-        await message.channel.send(args.join(" "));
-      } 
+      if (args.length == 1 && !isNaN(args[0])) {
+        await message.channel.bulkDelete(parseInt(args[0]) + 1);
+      }
     } 
   }
 }
