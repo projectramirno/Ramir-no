@@ -14,8 +14,6 @@ module.exports = class Prefix extends Command {
     const args = await this.getArgs(message);
 
     // Command
-
-    console.log(this.isCommand(message))
     if (await this.hasPerms(message.member) && await this.isCommand(message)) {
 
       await message.delete();
