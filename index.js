@@ -20,6 +20,7 @@ const token = process.env.token;
   for (const file of files) {
     
     client.on("ready", () => {
+
       // Loading commands
       const commandName = file.substring(0, file.length - 3);
       const command = new (require(`${commandDir}/${commandName}.js`))(client);

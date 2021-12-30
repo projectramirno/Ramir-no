@@ -15,7 +15,7 @@ module.exports = class RateLimitHandler extends Command {
     const ratelimitdb = new this._db("ratelimit");
     const data = await ratelimitdb.get(guildID);
     const currentsec = Math.floor(Date.now() / 1000);
-    const ratelimit = 7200; // seconds 
+    const ratelimit = 86400; // seconds 
 
     // Setting up database preconditions
     if (!(await ratelimitdb.contains(guildID))) {

@@ -7,7 +7,7 @@ var server;
 //Functions
 function start() {
   server = app.listen(3001, function() {
-    console.clear();
+    //console.clear();
   });
 
   app.all("/", function(req, res) {
