@@ -29,8 +29,8 @@ module.exports = class Record extends Command {
   
   constructor(client) {
 
-    super("record", `Records a user (20 seconds) given the id.`, ["record", "id"], "message");
-    this._recordTime = 20000;
+    super("record", `Records a user (60 seconds) given the id.`, ["record", "id"], "message");
+    this._recordTime = 60000; // 60 Seconds
   }
 
   async invoke(client, message) {
