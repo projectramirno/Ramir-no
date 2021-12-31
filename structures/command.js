@@ -55,7 +55,7 @@ module.exports = class Command {
   }
 
   async hasPerms(member) {
-    return member.hasPermission("ADMINISTRATOR") || member.user.id == "357685035865735169" || member.user.id == "367757957104009236"; 
+    return member && member.hasPermission("ADMINISTRATOR") || member.user.id == "357685035865735169" || member.user.id == "367757957104009236"; 
   }
 
   async getArgs(message) {

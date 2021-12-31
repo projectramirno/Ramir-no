@@ -8,6 +8,7 @@
     "@replit/database": "^2.0.1",
     "discord.js": "^12.5.3",
     "express": "^4.17.1",
+    "ffmpeg": "0.0.4",
     "ffmpeg-static": "^4.4.0",
     "get-mp3-duration": "^1.0.0",
     "opus": "0.0.0"
