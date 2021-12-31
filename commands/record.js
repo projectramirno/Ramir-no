@@ -78,7 +78,7 @@ module.exports = class Record extends Command {
                   audioStream.pipe(fs.createWriteStream(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`));
               });
 
-              await this.sleep(4000);
+              await this.sleep(20000);
               await target.leave();
 
               // Convert test.pcm to an mp3 using ffmpeg
