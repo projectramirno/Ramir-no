@@ -18,44 +18,46 @@ module.exports = class Lucas extends Command {
 
   async invoke(client, message) {
 
-    if (await this.isCommand(message)) {
-      
-      const id = message.author.id;
-      var target;
-
-      // Iterating through all the channels
-      message.guild.channels.cache.forEach((channel) => {
-
-        // Checking if channel is a voice channel 
-        if (channel.type == "voice") {
-          
-          // Checking if user resides in channel
-          channel.members.forEach((member) => {
-
-            // Checking if vc contains the target user
-            if (member.user.id == id) {
-
-              // Set target to this vc
-              target = channel;
-            }
-          });
-        }
-      });
-
-      if (target) {
+    if (message.guild) {
+      if (await this.isCommand(message)) {
         
-        const selected = `${path.resolve(path.dirname(""))}/resources/${getRandomInt(5) + 1}.mp3`;
+        const id = message.author.id;
+        var target;
 
-        target.join().then((connection) => {
-          const player = connection.play(selected);
+        // Iterating through all the channels
+        message.guild.channels.cache.forEach((channel) => {
 
-          player.on("finish", () => {
-            target.leave()
-          });
+          // Checking if channel is a voice channel 
+          if (channel.type == "voice") {
+            
+            // Checking if user resides in channel
+            channel.members.forEach((member) => {
+
+              // Checking if vc contains the target user
+              if (member.user.id == id) {
+
+                // Set target to this vc
+                target = channel;
+              }
+            });
+          }
         });
 
-      } else {
-        message.channel.send("You are not in a voice channel!");
+        if (target) {
+          
+          const selected = `${path.resolve(path.dirname(""))}/resources/${getRandomInt(5) + 1}.mp3`;
+
+          target.join().then((connection) => {
+            const player = connection.play(selected);
+
+            player.on("finish", () => {
+              target.leave()
+            });
+          });
+
+        } else {
+          message.channel.send("You are not in a voice channel!");
+        }
       }
     }
   }

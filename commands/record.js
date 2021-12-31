@@ -9,12 +9,16 @@ const path = require("path");
 var recording = {};
 
 // Functions
-function createMP3(pcmdir) {
+function createMP3(pcmdir, callback) {
   const ffmpegdir = require("ffmpeg-static");
-  const args = `-f s16le -ar 44.1k -ac 2 -i ${pcmdir} recordings/${Date.now()}.mp3`;
+
+  const filename = Date.now();
+  const args = `-f s16le -ar 44.1k -ac 2 -i ${pcmdir} ${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`;
 
   require("child_process").exec(`${ffmpegdir} ${args}`, (err, stdout, stderr) => {
     fs.unlinkSync(pcmdir);
+
+    callback(filename);
   });
 }
 
@@ -28,9 +32,10 @@ module.exports = class Record extends Command {
   async invoke(client, message) {
 
     const args = await this.getArgs(message);
+    const discord = this._discord;
 
     // Command
-    if (await this.hasPerms(message.member) && await this.isCommand(message)) {
+    if (await this.hasPerms(message.member) && await this.isCommand(message) && message.guild) {
 
       if (args.length > 0) {
         if (isNaN(args[0])) {
@@ -73,11 +78,16 @@ module.exports = class Record extends Command {
                   audioStream.pipe(fs.createWriteStream(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`));
               });
 
-              await this.sleep(20000);
+              await this.sleep(4000);
               await target.leave();
 
               // Convert test.pcm to an mp3 using ffmpeg
-              createMP3(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`);
+              await createMP3(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`, function(filename){
+                const attachment = new discord.MessageAttachment(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
+
+                message.author.send(attachment);
+              });
+              
             } else {
               message.channel.send("User is not in any voice channel.");
             }
