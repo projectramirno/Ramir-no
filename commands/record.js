@@ -28,7 +28,9 @@ function createMP3(pcmdir) {
 module.exports = class Record extends Command {
   
   constructor(client) {
-    super("record", "Records a user given the id.", ["record", "id"], "message");
+
+    super("record", `Records a user (20 seconds) given the id.`, ["record", "id"], "message");
+    this._recordTime = 20000;
   }
 
   async invoke(client, message) {
@@ -80,7 +82,7 @@ module.exports = class Record extends Command {
                 audioStream.pipe(fs.createWriteStream(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`));
               });
 
-              await this.sleep(4000);
+              await this.sleep(this._recordTime);
               await target.leave();
 
               //Convert test.pcm to an mp3 using ffmpeg
