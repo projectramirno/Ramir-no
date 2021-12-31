@@ -9,16 +9,18 @@ const path = require("path");
 var recording = {};
 
 // Functions
-function createMP3(pcmdir, callback) {
-  const ffmpegdir = require("ffmpeg-static");
+function createMP3(pcmdir) {
+  return new Promise(function(resolve, reject) {
+    const ffmpegdir = require("ffmpeg-static");
 
-  const filename = Date.now();
-  const args = `-f s16le -ar 44.1k -ac 2 -i ${pcmdir} ${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`;
+    const filename = Date.now();
+    const args = `-f s16le -ar 44.1k -ac 2 -i ${pcmdir} ${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`;
 
-  require("child_process").exec(`${ffmpegdir} ${args}`, (err, stdout, stderr) => {
-    fs.unlinkSync(pcmdir);
+    require("child_process").exec(`${ffmpegdir} ${args}`, (err, stdout, stderr) => {
+      fs.unlinkSync(pcmdir);
 
-    callback(filename);
+      resolve(filename);
+    });
   });
 }
 
@@ -73,20 +75,19 @@ module.exports = class Record extends Command {
               // from user into a test.pcm 
               target.join().then(conn => {
                   
-                  const receiver = conn.receiver;
-                  const audioStream = receiver.createStream(targetMember, { mode: 'pcm', end: 'manual' });
-                  audioStream.pipe(fs.createWriteStream(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`));
+                const receiver = conn.receiver;
+                const audioStream = receiver.createStream(targetMember, { mode: 'pcm', end: 'manual' });
+                audioStream.pipe(fs.createWriteStream(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`));
               });
 
-              await this.sleep(20000);
+              await this.sleep(4000);
               await target.leave();
 
-              // Convert test.pcm to an mp3 using ffmpeg
-              await createMP3(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`, function(filename){
-                const attachment = new discord.MessageAttachment(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
+              //Convert test.pcm to an mp3 using ffmpeg
+              const filename = await createMP3(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`);
+              const attachment = new discord.MessageAttachment(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
 
-                message.author.send(attachment);
-              });
+              message.author.send(attachment);
               
             } else {
               message.channel.send("User is not in any voice channel.");
