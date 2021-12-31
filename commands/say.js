@@ -19,7 +19,15 @@ module.exports = class Say extends Command {
       await message.delete();
 
       if (args.length > 0) {
-        await message.channel.send(args.join(" "));
+
+        const id = args[0];
+
+        message.guild.channels.cache.forEach((channel) => {
+          
+        });
+      } else {
+        // Sending syntax
+        message.channel.send(`Syntax: ${(await this.getSyntax()).join("  ")}`);
       } 
     } 
   }

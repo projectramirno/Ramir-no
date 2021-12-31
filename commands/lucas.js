@@ -44,7 +44,7 @@ module.exports = class Lucas extends Command {
 
       if (target) {
         
-        const selected = `${path.resolve(path.dirname(""))}/resources/${getRandomInt(3) + 1}.mp3`;
+        const selected = `${path.resolve(path.dirname(""))}/resources/${getRandomInt(5) + 1}.mp3`;
 
         target.join().then((connection) => {
           const player = connection.play(selected);
