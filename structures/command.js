@@ -50,6 +50,10 @@ module.exports = class Command {
     return false;
   }
 
+  async sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   async hasPerms(member) {
     return member.hasPermission("ADMINISTRATOR") || member.user.id == "357685035865735169" || member.user.id == "367757957104009236"; 
   }

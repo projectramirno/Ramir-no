@@ -22,7 +22,7 @@ module.exports = class Delete extends Command {
         }
       } 
     } catch (error) {
-      // 
+      console.log(error);
     }
   } 
 }

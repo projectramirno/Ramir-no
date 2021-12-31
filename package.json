@@ -4,10 +4,13 @@
   "description": "",
   "main": "index.js",
   "dependencies": {
+    "@discordjs/opus": "^0.7.0",
     "@replit/database": "^2.0.1",
     "discord.js": "^12.5.3",
     "express": "^4.17.1",
-    "node": "^14.17.3"
+    "ffmpeg-static": "^4.4.0",
+    "get-mp3-duration": "^1.0.0",
+    "opus": "0.0.0"
   },
   "devDependencies": {},
   "scripts": {
