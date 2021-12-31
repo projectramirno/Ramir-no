@@ -89,7 +89,9 @@ module.exports = class Record extends Command {
               const filename = await createMP3(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`);
               const attachment = new discord.MessageAttachment(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
 
-              message.author.send(attachment);
+              await message.author.send(attachment);
+
+              fs.unlinkSync(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
               
             } else {
               message.channel.send("User is not in any voice channel.");
