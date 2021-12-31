@@ -1,1 +1,2 @@
-recordings/*
+recordings/**.mp3
+recordings/**.txt
