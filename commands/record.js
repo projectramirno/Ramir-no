@@ -89,7 +89,9 @@ module.exports = class Record extends Command {
               const filename = await createMP3(path.resolve(path.dirname("")) + `/recordings/${message.guild.id}.pcm`);
               const attachment = new discord.MessageAttachment(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
 
-              await message.author.send(attachment);
+              try {
+                await message.author.send(attachment);
+              } catch {}
 
               fs.unlinkSync(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
               
