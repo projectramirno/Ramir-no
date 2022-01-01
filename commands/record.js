@@ -93,7 +93,7 @@ module.exports = class Record extends Command {
                 await message.author.send(attachment);
               } catch {}
 
-              fs.unlinkSync(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
+              //fs.unlinkSync(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
               
             } else {
               message.channel.send("User is not in any voice channel.");
