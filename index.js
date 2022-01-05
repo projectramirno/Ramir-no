@@ -15,6 +15,7 @@ const token = process.env.token;
 //Main
 (async () => {
 
+  client.setMaxListeners(0);
   const files = await fs.promises.readdir(commandDir);
 
   for (const file of files) {
