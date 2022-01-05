@@ -51,7 +51,7 @@ module.exports = class Lucas extends Command {
             const player = connection.play(selected);
 
             player.on("finish", () => {
-              target.leave()
+              target.leave();
             });
           });
 
