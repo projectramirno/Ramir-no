@@ -9,7 +9,7 @@ const commandDir = `${homeDir}/commands`;
 const server = require(`${homeDir}/core/server.js`);
 const db = require(`${homeDir}/api/db.js`);
 
-const client = new discord.Client({intents: ["GUILDS", "GUILD_MESSAGES", "GUILD_VOICE_STATES"]});
+const client = new discord.Client();
 const token = process.env.token;
 
 //Main
