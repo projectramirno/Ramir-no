@@ -17,7 +17,9 @@ function createMP3(pcmdir) {
     const args = `-f s16le -ar 44.1k -ac 2 -i ${pcmdir} ${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`;
 
     require("child_process").exec(`${ffmpegdir} ${args}`, (err, stdout, stderr) => {
-      fs.unlinkSync(pcmdir);
+      try {
+        fs.unlinkSync(pcmdir);
+      } catch {};
 
       resolve(filename);
     });
@@ -93,7 +95,7 @@ module.exports = class Record extends Command {
                 await message.author.send(attachment);
               } catch {}
 
-              //fs.unlinkSync(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
+              fs.unlinkSync(`${path.resolve(path.dirname(""))}/recordings/${filename}.mp3`);
               
             } else {
               message.channel.send("User is not in any voice channel.");
